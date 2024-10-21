@@ -1,12 +1,237 @@
-<html>
+<!DOCTYPE html>
+<html lang="de">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/png" href="favicon.png">
     <title>Magnus Menke</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        font-family: 'Quicksand', sans-serif;
+        text-align: center;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 3em;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 1.2em;
+        margin-bottom: 30px;
+      }
+
+      #zitateBox {
+        width: 80%;
+        max-width: 600px;
+        margin: 0 auto 20px;
+        padding: 30px;
+        border: 2px dashed #333;
+        font-size: 1.5em;
+        background-color: white;
+        min-height: 100px;
+        line-height: 1.5;
+      }
+
+      #quoteButton {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        outline: none;
+      }
+
+      #quoteButton img {
+        width: 120px;
+        transition: transform 0.2s;
+      }
+
+      #quoteButton:active img {
+        transform: translateY(5px);
+      }
+
+      /* Canvas Styles */
+      #pongCanvas {
+        border: 2px solid #333;
+        background-color: #fff;
+        margin: 20px auto;
+        display: block;
+      }
+
+      /* Game Over Message */
+      #gameOverMessage {
+        font-size: 2em;
+        color: red;
+        margin-top: 20px;
+      }
+
+      /* Restart Button */
+      #restartButton {
+        display: none;
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        background-color: #333;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Responsive canvas on smaller devices */
+      @media (max-width: 600px) {
+        #pongCanvas {
+          width: 100%;
+          height: auto;
+        }
+      }
+    </style>
   </head>
 
   <body>
     <h1>MAAAAGNUS</h1>
     <p>Holzweg 14</p>
-    <img src="https://content.codecademy.com/articles/github-pages-via-web-app/happy-ice-cream.gif" />
+    <img src="https://content.codecademy.com/articles/github-pages-via-web-app/happy-ice-cream.gif" alt="Happy Ice Cream" />
+
+    <!-- Zitate Box -->
+    <div id="zitateBox"></div>
+
+    <!-- Knopf mit Bild -->
+    <button id="quoteButton" onclick="zeigeZufallsZitat()">
+      <img id="buttonImage" src="https://static.vecteezy.com/system/resources/previews/008/478/197/non_2x/red-button-isolate-backbround-3d-render-png.png" alt="Knopf">
+    </button>
+
+    <!-- Canvas für das Ping Pong Spiel -->
+    <canvas id="pongCanvas" width="600" height="400"></canvas>
+
+    <!-- Game Over Message -->
+    <div id="gameOverMessage"></div>
+    <button id="restartButton" onclick="restartGame()">Restart</button>
+
+    <script>
+      // Zitate-Array
+      const zitate = [
+        "Das Leben ist wie Eiscreme: Genieße es, bevor es schmilzt.",
+        "Ohne Eiscreme gibt es kein Glück.",
+        "Eis macht alles besser, egal was passiert.",
+        "Ein Tag ohne Eis ist ein verlorener Tag.",
+        "Die besten Ideen kommen mit einer Waffel in der Hand.",
+        "Der kürzeste Weg zur guten Laune führt direkt zum Eiswagen."
+      ];
+
+      let aktuellesZitat = ""; // Damit das gleiche Zitat nicht zweimal hintereinander erscheint
+
+      function zeigeZufallsZitat() {
+        // Zufälliges Zitat auswählen, das nicht das aktuelle ist
+        let zufallsZitat = zitate[Math.floor(Math.random() * zitate.length)];
+        while (zufallsZitat === aktuellesZitat) {
+          zufallsZitat = zitate[Math.floor(Math.random() * zitate.length)];
+        }
+
+        // Zitat setzen
+        document.getElementById("zitateBox").innerText = zufallsZitat;
+        aktuellesZitat = zufallsZitat;
+
+        // Zeige das gedrückte Bild des Knopfes und setze es nach kurzer Zeit zurück
+        const buttonImage = document.getElementById("buttonImage");
+        buttonImage.src = "https://via.placeholder.com/120x50?text=Gedrückt"; // Hier kannst du ein anderes Bild für den gedrückten Zustand einfügen
+
+        // Nach 1 Sekunde den Knopf in den Ursprungszustand zurücksetzen
+        setTimeout(() => {
+          buttonImage.src = "https://static.vecteezy.com/system/resources/previews/008/478/197/non_2x/red-button-isolate-backbround-3d-render-png.png";
+        }, 1000);
+      }
+
+      // Ping-Pong-Spiel-Setup
+      const canvas = document.getElementById('pongCanvas');
+      const context = canvas.getContext('2d');
+
+      let ballX, ballY;
+      let ballSpeedX = 5;
+      let ballSpeedY = 5;
+      let paddleWidth = 100;
+      let paddleHeight = 10;
+      let paddleX;
+      let isGameOver = false;
+
+      function initGame() {
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+        paddleX = (canvas.width - paddleWidth) / 2;
+        isGameOver = false;
+        document.getElementById('gameOverMessage').innerText = '';
+        document.getElementById('restartButton').style.display = 'none';
+        gameLoop();
+      }
+
+      // Eventlistener für Mausbewegung
+      canvas.addEventListener('mousemove', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = event.clientX - rect.left;
+        paddleX = mouseX - paddleWidth / 2;
+
+        // Verhindert, dass das Paddle aus dem Canvas hinaus bewegt wird
+        if (paddleX < 0) {
+          paddleX = 0;
+        } else if (paddleX + paddleWidth > canvas.width) {
+          paddleX = canvas.width - paddleWidth;
+        }
+      });
+
+      function drawBall() {
+        context.beginPath();
+        context.arc(ballX, ballY, 10, 0, Math.PI * 2);
+        context.fillStyle = '#333';
+        context.fill();
+        context.closePath();
+      }
+
+      function drawPaddle() {
+        context.fillStyle = '#333';
+        context.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+      }
+
+      function moveBall() {
+        if (ballX + ballSpeedX > canvas.width || ballX + ballSpeedX < 0) {
+          ballSpeedX = -ballSpeedX;
+        }
+        if (ballY + ballSpeedY < 0) {
+          ballSpeedY = -ballSpeedY;
+        } else if (ballY + ballSpeedY > canvas.height - paddleHeight - 10 &&
+                   ballX > paddleX && ballX < paddleX + paddleWidth) {
+          ballSpeedY = -ballSpeedY;
+        } else if (ballY + ballSpeedY > canvas.height) {
+          isGameOver = true;
+          document.getElementById('gameOverMessage').innerText = 'Game Over!';
+          document.getElementById('restartButton').style.display = 'inline-block'; // Zeigt den Restart-Knopf an
+          return;
+        }
+
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+      }
+
+      function gameLoop() {
+        if (isGameOver) return;
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        drawBall();
+        drawPaddle();
+        moveBall();
+        requestAnimationFrame(gameLoop);
+      }
+
+      function restartGame() {
+        initGame(); // Setzt das Spiel zurück
+      }
+
+      // Spiel initialisieren
+      initGame();
+    </script>
   </body>
 </html>
+
