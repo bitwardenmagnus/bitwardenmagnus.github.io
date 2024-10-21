@@ -28,7 +28,6 @@
             margin-bottom: 30px;
         }
 
-        /* Stile für den neuen Text */
         .production {
             font-family: 'Quicksand', sans-serif; /* Quicksand für "Eine" und "Produktion" */
             font-weight: normal; /* Nicht fett */
@@ -77,10 +76,10 @@
             display: none; /* Anfangs versteckt */
         }
 
-        /* Hidden button for showing the game */
+        /* Button zum Anzeigen des Spiels */
         #showGameButton {
             display: block;
-            margin: 800px auto 20px; /* Vergrößert den oberen Abstand auf 100px */
+            margin: 800px auto 20px; /* Margin oben auf 800px gesetzt */
             padding: 10px 20px;
             font-size: 1.2em;
             background-color: #333;
@@ -107,6 +106,35 @@
             color: white;
             border: none;
             cursor: pointer;
+        }
+
+        /* Emoji Styles */
+        .emoji {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            animation: rise 1.5s forwards; /* Animation für das Aufsteigen */
+        }
+
+        @keyframes rise {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px);
+                opacity: 0; /* Bei 100% unsichtbar */
+            }
+        }
+
+        /* Position der Emojis */
+        .emoji-container {
+            position: fixed;
+            bottom: 0; /* Emojis erscheinen am unteren Bildschirmrand */
+            left: 0;
+            right: 0;
+            pointer-events: none; /* Emojis können nicht angeklickt werden */
+            z-index: -1; /* Emojis hinter anderen Elementen */
         }
 
         /* Responsive Anpassungen für kleinere Bildschirme */
@@ -153,6 +181,9 @@
     <div id="gameOverMessage"></div>
     <button id="restartButton" onclick="restartGame()">Restart</button>
 
+    <!-- Container für Emojis -->
+    <div class="emoji-container" id="emojiContainer"></div>
+
     <script>
         // Zitate-Array
         const zitate = [
@@ -164,6 +195,7 @@
             "Der kürzeste Weg zur guten Laune führt direkt zum Eiswagen."
         ];
 
+        const emojis = ['🦅', '🔥', '🗣️']; // Emoji Array
         let aktuellesZitat = ""; // Damit das gleiche Zitat nicht zweimal hintereinander erscheint
         let spielGestartet = false; // Flag, um zu überprüfen, ob das Spiel gestartet wurde
 
@@ -178,6 +210,9 @@
             document.getElementById("zitateBox").innerText = zufallsZitat;
             aktuellesZitat = zufallsZitat;
 
+            // Zeige Emojis an
+            zeigeEmojis();
+
             // Zeige das gedrückte Bild des Knopfes und setze es nach kurzer Zeit zurück
             const buttonImage = document.getElementById("buttonImage");
             buttonImage.src = "https://via.placeholder.com/120x50?text=Gedrückt"; // Hier kannst du ein anderes Bild für den gedrückten Zustand einfügen
@@ -188,54 +223,86 @@
             }, 1000);
         }
 
-        // Funktion zum Anzeigen des Spiels
-        function zeigeSpiel() {
-            document.getElementById('pongCanvas').style.display = 'block'; // Ping-Pong Spiel anzeigen
-            spielGestartet = true; // Spielstatus auf gestartet setzen
-            initGame(); // Spiel initialisieren
-            document.getElementById('showGameButton').style.display = 'none'; // Verstecke den Knopf
+        function zeigeEmojis() {
+            const emojiCount = 10; // Anzahl der Emojis, die angezeigt werden sollen
+            const emojiContainer = document.getElementById('emojiContainer');
+
+            for (let i = 0; i < emojiCount; i++) {
+                const emoji = document.createElement('div');
+                emoji.classList.add('emoji');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+                // Zufällige X-Position
+                const xPos = Math.random() * (window.innerWidth - 50); // Berechnung der X-Position basierend auf der Fensterbreite
+                emoji.style.left = `${xPos}px`;
+                emojiContainer.appendChild(emoji);
+
+                // Sichtbar machen
+                setTimeout(() => {
+                    emoji.style.opacity = 1; // Sichtbar machen
+                }, 0);
+
+                // Nach der Animation entfernen
+                setTimeout(() => {
+                    emojiContainer.removeChild(emoji);
+                }, 1500); // Wartezeit vor dem Entfernen
+            }
         }
 
-        // Ping-Pong-Spiel-Setup
+        function zeigeSpiel() {
+            document.getElementById('showGameButton').style.display = 'none'; // Button beim Start des Spiels verstecken
+            document.getElementById('pongCanvas').style.display = 'block'; // Spielcanvas anzeigen
+            initGame(); // Spiel initialisieren
+            spielGestartet = true; // Flag setzen, um anzuzeigen, dass das Spiel gestartet wurde
+        }
+
+        // Ping-Pong Spiel
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
 
-        let ballX, ballY;
-        let ballSpeedX = 5;
-        let ballSpeedY = 5;
-        let paddleWidth = 100;
-        let paddleHeight = 10;
+        let ballX, ballY, ballSpeedX, ballSpeedY;
         let paddleX;
+        const paddleWidth = 75;
+        const paddleHeight = 10;
         let isGameOver = false;
 
         function initGame() {
             ballX = canvas.width / 2;
             ballY = canvas.height / 2;
             paddleX = (canvas.width - paddleWidth) / 2;
+            ballSpeedX = 5;
+            ballSpeedY = 5;
             isGameOver = false;
-
-            // Verstecke Game Over Nachricht und Restart Button
-            document.getElementById('gameOverMessage').innerText = '';
-            document.getElementById('gameOverMessage').style.display = 'none'; // Sicherstellen, dass es versteckt ist
-            document.getElementById('restartButton').style.display = 'none'; // Sicherstellen, dass es versteckt ist
-
-            gameLoop();
+            document.getElementById('gameOverMessage').style.display = 'none'; // Game Over Nachricht verstecken
+            document.getElementById('restartButton').style.display = 'none'; // Restart-Knopf verstecken
+            gameLoop(); // Spielschleife starten
         }
 
-        // Eventlistener für Mausbewegung
-        canvas.addEventListener('mousemove', function (event) {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
+        // Bewege die Paddle mit der Maus oder Touch
+        canvas.addEventListener('mousemove', (event) => {
+            const mouseX = event.clientX - canvas.offsetLeft;
             paddleX = mouseX - paddleWidth / 2;
 
-            // Verhindert, dass das Paddle aus dem Canvas hinaus bewegt wird
+            // Halte die Paddle innerhalb des Canvas
             if (paddleX < 0) {
                 paddleX = 0;
-            } else if (paddleX + paddleWidth > canvas.width) {
+            } else if (paddleX > canvas.width - paddleWidth) {
                 paddleX = canvas.width - paddleWidth;
             }
+        });
 
-            event.preventDefault(); // Verhindert das Scrollen des Bildschirms
+        // Touch-Ereignis hinzufügen
+        canvas.addEventListener('touchmove', (event) => {
+            event.preventDefault(); // Verhindern des Scrollens auf Mobilgeräten
+            const touchX = event.touches[0].clientX - canvas.offsetLeft; // X-Position des Berührungsereignisses
+            paddleX = touchX - paddleWidth / 2;
+
+            // Halte die Paddle innerhalb des Canvas
+            if (paddleX < 0) {
+                paddleX = 0;
+            } else if (paddleX > canvas.width - paddleWidth) {
+                paddleX = canvas.width - paddleWidth;
+            }
         });
 
         function drawBall() {
@@ -284,10 +351,6 @@
         function restartGame() {
             initGame(); // Setzt das Spiel zurück
         }
-
-        // Spiel initialisieren (optional)
-        // initGame();
     </script>
 </body>
 </html>
-
