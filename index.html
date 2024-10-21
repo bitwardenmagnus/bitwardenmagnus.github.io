@@ -29,18 +29,18 @@
         }
 
         .production {
-            font-family: 'Quicksand', sans-serif; /* Quicksand für "Eine" und "Produktion" */
-            font-weight: normal; /* Nicht fett */
+            font-family: 'Quicksand', sans-serif;
+            font-weight: normal;
         }
 
         .lenard {
-            font-family: 'Carter One', sans-serif; /* Carter One für "Lenard" */
+            font-family: 'Carter One', sans-serif;
         }
 
         #zitateBox {
             width: 80%;
             max-width: 600px;
-            margin: 0 auto 40px; /* Abstand nach unten vergrößert */
+            margin: 0 auto 40px;
             padding: 30px;
             border: 2px dashed #333;
             font-size: 1.5em;
@@ -69,17 +69,16 @@
         #pongCanvas {
             border: 2px solid #333;
             background-color: #fff;
-            margin: 40px auto; /* Abstand nach oben und unten vergrößert */
+            margin: 40px auto;
             display: block;
-            max-width: 100%; /* Maximalbreite auf 100% setzen */
-            height: auto; /* Automatische Höhe */
-            display: none; /* Anfangs versteckt */
+            max-width: 100%;
+            height: auto;
+            display: none;
         }
 
-        /* Button zum Anzeigen des Spiels */
         #showGameButton {
             display: block;
-            margin: 800px auto 20px; /* Margin oben auf 800px gesetzt */
+            margin: 800px auto 20px;
             padding: 10px 20px;
             font-size: 1.2em;
             background-color: #333;
@@ -88,17 +87,15 @@
             cursor: pointer;
         }
 
-        /* Game Over Message */
         #gameOverMessage {
             font-size: 2em;
             color: red;
             margin-top: 20px;
-            display: none; /* Standardmäßig versteckt */
+            display: none; 
         }
 
-        /* Restart Button */
         #restartButton {
-            display: none; /* Standardmäßig versteckt */
+            display: none;
             margin-top: 20px;
             padding: 10px 20px;
             font-size: 1.2em;
@@ -108,12 +105,11 @@
             cursor: pointer;
         }
 
-        /* Emoji Styles */
         .emoji {
             position: absolute;
             font-size: 24px;
             opacity: 0;
-            animation: rise 1.5s forwards; /* Animation für das Aufsteigen */
+            animation: rise 1.5s forwards; 
         }
 
         @keyframes rise {
@@ -123,33 +119,31 @@
             }
             100% {
                 transform: translateY(-100px);
-                opacity: 0; /* Bei 100% unsichtbar */
+                opacity: 0; 
             }
         }
 
-        /* Position der Emojis */
         .emoji-container {
             position: fixed;
-            bottom: 0; /* Emojis erscheinen am unteren Bildschirmrand */
+            bottom: 0; 
             left: 0;
             right: 0;
-            pointer-events: none; /* Emojis können nicht angeklickt werden */
-            z-index: -1; /* Emojis hinter anderen Elementen */
+            pointer-events: none; 
+            z-index: -1; 
         }
 
-        /* Responsive Anpassungen für kleinere Bildschirme */
         @media (max-width: 600px) {
             h1 {
-                font-size: 2.5em; /* Schriftgröße für Titel verringern */
+                font-size: 2.5em; 
             }
             p {
-                font-size: 1em; /* Schriftgröße für den Text verringern */
+                font-size: 1em; 
             }
             #zitateBox {
-                font-size: 1.2em; /* Schriftgröße für Zitate verringern */
+                font-size: 1.2em; 
             }
             #quoteButton img {
-                width: 80px; /* Größe des Knopf-Bildes verringern */
+                width: 80px; 
             }
         }
     </style>
@@ -171,10 +165,10 @@
         <img id="buttonImage" src="https://static.vecteezy.com/system/resources/previews/008/478/197/non_2x/red-button-isolate-backbround-3d-render-png.png" alt="Knopf">
     </button>
 
-    <!-- Button zum Anzeigen des Spiels -->
-    <button id="showGameButton" onclick="zeigeSpiel()">Zeige das Ping-Pong Spiel</button>
+    <!-- Button Spiels -->
+    <button id="showGameButton" onclick="zeigeSpiel()">Ping-Pong</button>
 
-    <!-- Canvas für das Ping Pong Spiel -->
+    <!-- Canvas  Ping Pong Spiel -->
     <canvas id="pongCanvas" width="600" height="400"></canvas>
 
     <!-- Game Over Message -->
@@ -214,36 +208,31 @@
             "Hör auf zu slayen… Queen😕"
         ];
 
-        const emojis = ['🦅', '🔥', '🗣️']; // Emoji Array
-        let aktuellesZitat = ""; // Damit das gleiche Zitat nicht zweimal hintereinander erscheint
-        let spielGestartet = false; // Flag, um zu überprüfen, ob das Spiel gestartet wurde
+        const emojis = ['🦅', '🔥', '🗣️']; 
+        let aktuellesZitat = ""; 
+        let spielGestartet = false; 
 
         function zeigeZufallsZitat() {
-            // Zufälliges Zitat auswählen, das nicht das aktuelle ist
             let zufallsZitat = zitate[Math.floor(Math.random() * zitate.length)];
             while (zufallsZitat === aktuellesZitat) {
                 zufallsZitat = zitate[Math.floor(Math.random() * zitate.length)];
             }
 
-            // Zitat setzen
             document.getElementById("zitateBox").innerText = zufallsZitat;
             aktuellesZitat = zufallsZitat;
 
-            // Zeige Emojis an
             zeigeEmojis();
 
-            // Zeige das gedrückte Bild des Knopfes und setze es nach kurzer Zeit zurück
             const buttonImage = document.getElementById("buttonImage");
-            buttonImage.src = "https://via.placeholder.com/120x50?text=Gedrückt"; // Hier kannst du ein anderes Bild für den gedrückten Zustand einfügen
-
-            // Nach 1 Sekunde den Knopf in den Ursprungszustand zurücksetzen
+            buttonImage.src = "https://via.placeholder.com/120x50?text=Gedrückt"; 
+n
             setTimeout(() => {
                 buttonImage.src = "https://static.vecteezy.com/system/resources/previews/008/478/197/non_2x/red-button-isolate-backbround-3d-render-png.png";
             }, 1000);
         }
 
         function zeigeEmojis() {
-            const emojiCount = 10; // Anzahl der Emojis, die angezeigt werden sollen
+            const emojiCount = 10; 
             const emojiContainer = document.getElementById('emojiContainer');
 
             for (let i = 0; i < emojiCount; i++) {
@@ -251,31 +240,31 @@
                 emoji.classList.add('emoji');
                 emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
 
-                // Zufällige X-Position
-                const xPos = Math.random() * (window.innerWidth - 50); // Berechnung der X-Position basierend auf der Fensterbreite
+
+                const xPos = Math.random() * (window.innerWidth - 50);
                 emoji.style.left = `${xPos}px`;
                 emojiContainer.appendChild(emoji);
 
-                // Sichtbar machen
+
                 setTimeout(() => {
-                    emoji.style.opacity = 1; // Sichtbar machen
+                    emoji.style.opacity = 1; 
                 }, 0);
 
-                // Nach der Animation entfernen
+  
                 setTimeout(() => {
                     emojiContainer.removeChild(emoji);
-                }, 1500); // Wartezeit vor dem Entfernen
+                }, 1500); 
             }
         }
 
         function zeigeSpiel() {
-            document.getElementById('showGameButton').style.display = 'none'; // Button beim Start des Spiels verstecken
-            document.getElementById('pongCanvas').style.display = 'block'; // Spielcanvas anzeigen
-            initGame(); // Spiel initialisieren
-            spielGestartet = true; // Flag setzen, um anzuzeigen, dass das Spiel gestartet wurde
+            document.getElementById('showGameButton').style.display = 'none';
+            document.getElementById('pongCanvas').style.display = 'block'; 
+            initGame(); 
+            spielGestartet = true; 
         }
 
-        // Ping-Pong Spiel
+        // Ping-Pong 
         const canvas = document.getElementById('pongCanvas');
         const context = canvas.getContext('2d');
 
@@ -292,17 +281,15 @@
             ballSpeedX = 5;
             ballSpeedY = 5;
             isGameOver = false;
-            document.getElementById('gameOverMessage').style.display = 'none'; // Game Over Nachricht verstecken
-            document.getElementById('restartButton').style.display = 'none'; // Restart-Knopf verstecken
-            gameLoop(); // Spielschleife starten
+            document.getElementById('gameOverMessage').style.display = 'none'; 
+            document.getElementById('restartButton').style.display = 'none';
+            gameLoop(); 
         }
 
-        // Bewege die Paddle mit der Maus oder Touch
         canvas.addEventListener('mousemove', (event) => {
             const mouseX = event.clientX - canvas.offsetLeft;
             paddleX = mouseX - paddleWidth / 2;
 
-            // Halte die Paddle innerhalb des Canvas
             if (paddleX < 0) {
                 paddleX = 0;
             } else if (paddleX > canvas.width - paddleWidth) {
@@ -310,13 +297,11 @@
             }
         });
 
-        // Touch-Ereignis hinzufügen
         canvas.addEventListener('touchmove', (event) => {
-            event.preventDefault(); // Verhindern des Scrollens auf Mobilgeräten
-            const touchX = event.touches[0].clientX - canvas.offsetLeft; // X-Position des Berührungsereignisses
+            event.preventDefault();
+            const touchX = event.touches[0].clientX - canvas.offsetLeft;
             paddleX = touchX - paddleWidth / 2;
 
-            // Halte die Paddle innerhalb des Canvas
             if (paddleX < 0) {
                 paddleX = 0;
             } else if (paddleX > canvas.width - paddleWidth) {
@@ -349,8 +334,8 @@
             } else if (ballY + ballSpeedY > canvas.height) {
                 isGameOver = true;
                 document.getElementById('gameOverMessage').innerText = 'Game Over!';
-                document.getElementById('gameOverMessage').style.display = 'block'; // Zeigt die Game Over Nachricht an
-                document.getElementById('restartButton').style.display = 'inline-block'; // Zeigt den Restart-Knopf an
+                document.getElementById('gameOverMessage').style.display = 'block'; 
+                document.getElementById('restartButton').style.display = 'inline-block'; 
                 return;
             }
 
@@ -368,7 +353,7 @@
         }
 
         function restartGame() {
-            initGame(); // Setzt das Spiel zurück
+            initGame();
         }
     </script>
 </body>
