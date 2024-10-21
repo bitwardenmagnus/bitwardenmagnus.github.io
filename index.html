@@ -31,7 +31,7 @@
       #zitateBox {
         width: 80%;
         max-width: 600px;
-        margin: 0 auto 20px;
+        margin: 0 auto 40px; /* Abstand nach unten vergrößert */
         padding: 30px;
         border: 2px dashed #333;
         font-size: 1.5em;
@@ -60,8 +60,10 @@
       #pongCanvas {
         border: 2px solid #333;
         background-color: #fff;
-        margin: 20px auto;
+        margin: 40px auto; /* Abstand nach oben und unten vergrößert */
         display: block;
+        max-width: 100%; /* Maximalbreite auf 100% setzen */
+        height: auto; /* Automatische Höhe */
       }
 
       /* Game Over Message */
@@ -83,11 +85,19 @@
         cursor: pointer;
       }
 
-      /* Responsive canvas on smaller devices */
+      /* Responsive Anpassungen für kleinere Bildschirme */
       @media (max-width: 600px) {
-        #pongCanvas {
-          width: 100%;
-          height: auto;
+        h1 {
+          font-size: 2.5em; /* Schriftgröße für Titel verringern */
+        }
+        p {
+          font-size: 1em; /* Schriftgröße für den Text verringern */
+        }
+        #zitateBox {
+          font-size: 1.2em; /* Schriftgröße für Zitate verringern */
+        }
+        #quoteButton img {
+          width: 80px; /* Größe des Knopf-Bildes verringern */
         }
       }
     </style>
@@ -96,7 +106,7 @@
   <body>
     <h1>MAAAAGNUS</h1>
     <p>Holzweg 14</p>
-    <img src="https://content.codecademy.com/articles/github-pages-via-web-app/happy-ice-cream.gif" alt="Happy Ice Cream" />
+    <img src="https://content.codecademy.com/articles/github-pages-via-web-app/happy-ice-cream.gif" alt="Happy Ice Cream" style="max-width: 100%; height: auto;"/>
 
     <!-- Zitate Box -->
     <div id="zitateBox"></div>
@@ -183,6 +193,22 @@
         }
       });
 
+      // Touch Events für mobile Steuerung
+      canvas.addEventListener('touchmove', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const touchX = event.touches[0].clientX - rect.left;
+        paddleX = touchX - paddleWidth / 2;
+
+        // Verhindert, dass das Paddle aus dem Canvas hinaus bewegt wird
+        if (paddleX < 0) {
+          paddleX = 0;
+        } else if (paddleX + paddleWidth > canvas.width) {
+          paddleX = canvas.width - paddleWidth;
+        }
+
+        event.preventDefault(); // Verhindert das Scrollen des Bildschirms
+      });
+
       function drawBall() {
         context.beginPath();
         context.arc(ballX, ballY, 10, 0, Math.PI * 2);
@@ -234,4 +260,5 @@
     </script>
   </body>
 </html>
+
 
