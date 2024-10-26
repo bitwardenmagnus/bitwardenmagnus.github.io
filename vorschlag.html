@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vorschläge einreichen</title>
+    <style>
+        /* Einfache Styles für die Anzeige */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 500px; /* Maximale Breite für die zentrale Ausrichtung */
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Weitere Zitate vorschlagen</h2>
+    <textarea id="vorschlagText" placeholder="Geben Sie Ihren Vorschlag ein..."></textarea>
+    <button onclick="sendeVorschlag()">Absenden</button>
+</div>
+
+<script>
+    // Funktion zum Senden des Vorschlags an den Discord-Webhook
+    function sendeVorschlag() {
+        const webhookURL = "https://discord.com/api/webhooks/1299767745067483157/RJ07CgUhikXVTgupltqANmPBIpXCKUS0rQsb6GLA0Ko9uTpvg_wY-Wq8H2WcZRvsd37c";
+        const vorschlag = document.getElementById("vorschlagText").value;
+
+        if (vorschlag.trim() === "") {
+            alert("Bitte geben Sie einen Vorschlag ein!");
+            return;
+        }
+
+        // Die Nutzlast für den Webhook
+        const payload = {
+            content: vorschlag
+        };
+
+        // Die Nachricht an den Webhook senden
+        fetch(webhookURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Vorschlag wurde erfolgreich gesendet!");
+                document.getElementById("vorschlagText").value = ""; // Textfeld leeren
+            } else {
+                alert("Fehler beim Senden des Vorschlags.");
+            }
+        })
+        .catch(error => {
+            console.error("Fehler:", error);
+            alert("Es gab ein Problem beim Senden des Vorschlags.");
+        });
+    }
+</script>
+
+</body>
+</html>
